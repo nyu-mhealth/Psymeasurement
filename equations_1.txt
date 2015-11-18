@@ -1,0 +1,22 @@
+
+
+Probabilities
+
+"Se” = Sensitivity
+"Sp” = Specificity
+“PPP” = Positive Predictive Power
+“NPP” = Negative Predictive Power
+
+Se = P() True(+) given Dx(+) = TP/(TP+FN)
+Sp = P() True(-) given Dx(-) = TN/(TN+FP)
+PPP  = P() Dx(+) given Test(+) = TP/(TP+FP)
+NPP  = P() Dx(-) given Test(-) = TN/(TN+FN)
+IPPP = prevalence adjustment = PPP-Prev
+INPP = prevalence adjustment = NPP-(1-Prev)
+
+“Quality” Indicators (prevalence adjusted)
+
+Q(PPP)  = % increase Dx power = IPPP / (1-Prev)
+Q(NPP)  = % increase Dx power = INPP / Prev
+
+Bayesian ApproachPPP = (Se*Prev)/[(Se*Prev)+[(1-Prev)*(1-Sp)]]NPP = [Sp*(1-Prev)/[[Sp*(1-Prev)]+[Prev*(1-Se)]]
