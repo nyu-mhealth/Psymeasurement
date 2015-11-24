@@ -5,7 +5,7 @@ library(psych)
 library(plyr)
 
 # set work directory
-setwd("~/Documents/projects/Psychometrics")
+setwd("~/psymeasurement-scripts")
 
 ###################
 # data processing #
@@ -30,6 +30,19 @@ cfcs_raw<- rename(cfcs_raw, c("cfcs_submit$Id"="ID"))
 reverse_items<- c(paste0("item",c(3:5, 9:12)))
 cfcs_raw[,reverse_items]<- 6 - cfcs_raw[,reverse_items]
 
+describe(cfcs_raw)
+
+#############
+# histogram #
+#############
+
+item_name<- names(cfcs_raw[2:14])
+par(mfrow=c(4,4))
+for (i in item_name){
+  hist(cfcs_raw[[i]], xlab=i, main=paste("Histogram of",i))
+}
+
+
 #################
 # data analysis #
 #################
@@ -46,7 +59,7 @@ draw_sample<- c(5, 10, 15, 20, 25, 30, 40) # the number of sample being drawn
 # define a resample function to keep code clean
 resample.function<- function(cfcs_raw, draw_sample){
   n<- nrow(cfcs_raw) # count total number of observations
-  N<- 1000 # the number of times to resample
+  N<- 10 # the number of times to resample
   alpha_v<- numeric(N)# create a vector to store the results
   average_r<- numeric(N)
   resample<- NULL
