@@ -33,7 +33,7 @@ setwd("~/")
 data<- read.csv(csv_filename, stringsAsFactors = F)
 
 # only keep submitted surveys
-data_raw<- subset(data, data$AssignmentStatusCode=="Submitted", 
+data_raw<- subset(data, AssignmentStatusCode=="Submitted"| AssignmentStatusCode=="Approved", 
                   select=data_columns)
 
 # rename item names
@@ -133,7 +133,7 @@ resample.function<- function(data_raw, draw_sample, x){
 resample<- resample.function(data_raw, draw_sample, 100)
 # combind with the whole sample
 i<- 50
-alpha_mean<- alpha50
+alpha_mean<- alpha_raw50
 alpha_stdmean<- alpha_std50
 average_rmean<- average_r50
 alphar50<- cbind(i, alpha_mean, alpha_stdmean, average_rmean)
