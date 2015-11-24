@@ -1,11 +1,10 @@
-
-install.packages('psych')
-install.packages('plyr')
-install.packages('gtools')
-install.packages('foreach')
-install.packages('doParallel')
-install.packages('ggplot2')
-# install.packages('Hmisc')
+#install.packages('psych')
+#install.packages('plyr')
+#install.packages('gtools')
+#install.packages('foreach')
+#install.packages('doParallel')
+#install.packages('ggplot2')
+#install.packages('Hmisc')
 
 library(psych)
 library(plyr)
