@@ -13,6 +13,7 @@ library(gtools)
 library(foreach)
 library(doParallel)
 library(ggplot2)
+library(survos)
 # library(Hmisc)
 
 ###################
@@ -20,9 +21,23 @@ library(ggplot2)
 ###################
 
 
-# set file directory
-setwd("~/ryann01")
+# set file for csv
+setwd("/var/www/psymeasurement-scripts/projects/ryann01")
 csv_filename = "turk_job_reproductive_autonomy_wave_78_assignments.csv"
+
+# set configuration for api
+projectCode <- "ryan01"
+username<-'otac'
+password<-'password'
+endpoint=paste(projectCode, ".psymeasurement.com/api1.0", sep="")
+jobId<-122
+waveId<-424
+
+survosLogin()
+assignments <- assignments(jobId=jobId)
+
+data_columns = c("Id", "abortion","baby","whether_use","gender")
+resample_iterations = 10
 
 
 ###################
@@ -35,7 +50,7 @@ data<- read.csv(csv_filename, stringsAsFactors = F)
 
 # only keep submitted surveys
 data_raw<- subset(data, data$AssignmentStatusCode=="Submitted", 
-                  select=c(Id, q1, q2, q3, q4, q5))
+                  select=data_columns)
 
 # rename item names
 #for (i in 1:(ncol(data_raw)-1)){
@@ -140,7 +155,7 @@ draw_item<- foreach(k=names(data_raw[2:(length(data_raw)-2)]), .combine='rbind')
   data_item_resample<- resample.function(data_item, draw_sample, 10)
   data_item_resample<- cbind(k, data_item_resample)
   draw_item<- rbind(draw_item, data_item_resample)
-  i<- 50
+  i<- resample_iterations
   alpha_mean<- alpha(data_item[2:(ncol(data_raw)-1)])$total$raw_alpha
   average_rmean<- alpha(data_raw[2:(ncol(data_raw)-1)])$total$average_r
   alphar50<- cbind(k, i, alpha_mean, average_rmean)
