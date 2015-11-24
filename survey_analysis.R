@@ -1,18 +1,11 @@
-
-install.packages('psych')
-install.packages('plyr')
-install.packages('gtools')
-install.packages('foreach')
-install.packages('doParallel')
-install.packages('ggplot2')
-# install.packages('Hmisc')
-
 library(psych)
 library(plyr)
 library(gtools)
 library(foreach)
 library(doParallel)
 library(ggplot2)
+library(jsonlite)
+library(httr)
 library(survos)
 # library(Hmisc)
 
@@ -22,18 +15,16 @@ library(survos)
 
 
 # set file for csv
-setwd("/var/www/psymeasurement-scripts/projects/ryann01")
-csv_filename = "turk_job_reproductive_autonomy_wave_78_assignments.csv"
+setwd("~")
 
 # set configuration for api
 projectCode <- "ryan01"
-username<-'otac'
-password<-'password'
-endpoint=paste(projectCode, ".psymeasurement.com/api1.0", sep="")
-jobId<-122
-waveId<-424
+username <- "ryan01"
+password <- "password"
+endPoint <- paste("https://", projectCode, ".psymeasurement.com/api1.0", sep="")
+jobId <- 122
 
-survosLogin()
+loginSurvos(username, password)
 assignments <- assignments(jobId=jobId)
 
 data_columns = c("Id", "abortion","baby","whether_use","gender")
