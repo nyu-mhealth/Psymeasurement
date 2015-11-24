@@ -15,16 +15,23 @@ library(doParallel)
 library(ggplot2)
 # library(Hmisc)
 
+###################
+# Configuration
+###################
+
+
+# set file directory
+setwd("~/ryann01")
+csv_filename = "turk_job_reproductive_autonomy_wave_78_assignments.csv"
+
 
 ###################
 # data processing #
 ###################
 
-# set file directory
-setwd("~/")
 
 # import csv file
-data<- read.csv("zl1230.csv", stringsAsFactors = F, sep="\t")
+data<- read.csv(csv_filename, stringsAsFactors = F)
 
 # only keep submitted surveys
 data_raw<- subset(data, data$AssignmentStatusCode=="Submitted", 
