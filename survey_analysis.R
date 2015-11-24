@@ -31,7 +31,7 @@ setwd("~/")
 
 
 # import csv file
-data<- read.csv(csv_filename, stringsAsFactors = F, sep="\t")
+data<- read.csv(csv_filename, stringsAsFactors = F)
 
 # only keep submitted surveys
 data_raw<- subset(data, data$AssignmentStatusCode=="Submitted", 
