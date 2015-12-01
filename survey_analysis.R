@@ -113,12 +113,12 @@ resample.function<- function(data_raw, draw_sample, x){
       obs<- sample(n, i, replace=F)
       samp<- data_raw[obs,]
       alpha_list<- alpha(samp[2:(ncol(samp)-2)])
-      alpha_v[j]<- alpha_list$total$raw_alpha
-      alpha_stdv[j]<- alpha_list$total$std.alpha
-      average_r[j]<- alpha_list$total$average_r
+      alpha_v[j]<- alpha_list$total$raw_alpha # extract raw alpha value
+      alpha_stdv[j]<- alpha_list$total$std.alpha # extract standardized alpha value
+      average_r[j]<- alpha_list$total$average_r # extract average r value
     }
     alpha_mean<- mean(alpha_v)
-    alpha_lower<- alpha_mean - qnorm(0.975)*sd(alpha_v)
+    alpha_lower<- alpha_mean - qnorm(0.975)*sd(alpha_v) # calculate confidence interval
     alpha_higher<- alpha_mean + qnorm(0.975)*sd(alpha_v)
     alpha_stdmean<- mean(alpha_stdv)
     alpha_stdlower<- alpha_stdmean - qnorm(0.975)*sd(alpha_stdv)
@@ -130,9 +130,9 @@ resample.function<- function(data_raw, draw_sample, x){
                    average_rmean, average_rlower, average_rhigher)
     
   }
-  return(resample)
+  return(resample) # specify which data frame to return in a function
 }
-resample<- resample.function(data_raw, draw_sample, 100)
+resample<- resample.function(data_raw, draw_sample, 100) # run 100 bootstrap
 # combind with the whole sample
 i<- 50
 alpha_mean<- alpha_raw50
@@ -140,7 +140,7 @@ alpha_stdmean<- alpha_std50
 average_rmean<- average_r50
 alphar50<- cbind(i, alpha_mean, alpha_stdmean, average_rmean)
 resample<- smartbind(resample, alphar50)
-for (i in 1:ncol(resample)){
+for (i in 1:ncol(resample)){ # replace missing values to the previous value in the same row
   resample[7,i]<- ifelse(is.na(resample[7,i]), resample[7,i-1], resample[7,i])
 }
 
@@ -149,8 +149,8 @@ for (i in 1:ncol(resample)){
 
 draw_item<- NULL # create an empty object
 for (k in names(data_raw[2:(length(data_raw)-2)])){
-  data_item<- data_raw[ , !names(data_raw) %in% c(i)]
-  data_item_resample<- resample.function(data_item, draw_sample, 10)
+  data_item<- data_raw[ , !names(data_raw) %in% c(i)] # delete one variable at a time
+  data_item_resample<- resample.function(data_item, draw_sample, 10) # 10 bootstrap
   data_item_resample<- cbind(k, data_item_resample)
   draw_item<- rbind(draw_item, data_item_resample)
   i<- 50
@@ -160,11 +160,11 @@ for (k in names(data_raw[2:(length(data_raw)-2)])){
   alphar50<- cbind(k, i, alpha_mean, alpha_stdmean, average_rmean)
   draw_item<- smartbind(draw_item, alphar50)
 }
-for (i in 1:ncol(draw_item)){
+for (i in 1:ncol(draw_item)){ # replace missing values
   draw_item[,i]<- ifelse(is.na(draw_item[,i]), draw_item[,i-1], draw_item[,i])
 }
 
-
+# export data frame as csv files
 write.table(resample, file="resample.csv", sep=",", row.names=F)
 write.table(draw_item, file="draw_item.csv", sep=",", row.names=F)
 
@@ -203,11 +203,11 @@ N<- length(total_count)
 
 # If you don't have subscales, don't run line 205-213
 # define subscales
-# 5 item raw scored
+# items raw scored
 raw_items<- c("abortion","baby")
 s1_count<- paste0(raw_items,"_bin")
 a<- length(s1_count)
-# 7 item reverse scored
+# items reverse scored
 reverse_items<- c("whether_use","gender")
 s2_count<- paste0(reverse_items,"_bin")
 b<- length(s2_count)
