@@ -237,6 +237,7 @@ data_raw$s1_std<- scale(data_raw$s1_count)
 data_raw$s2_std<- scale(data_raw$s2_count)
 
 ## dx cutpoints ##
+cutpoint<- 1:N
 for (i in 1:N){
   data_raw[[paste0("SD",i,sep="")]]<- ifelse(data_raw$Total_count>=i, 1, 0)
 }
@@ -254,7 +255,18 @@ for (i in 1:N){
   data_raw[[paste0("FP_t",i,sep="")]]<- ifelse(data_raw$Total_count<i, data_raw$Total_count, NA)
   data_raw[[paste0("TN_t",i,sep="")]]<- ifelse(data_raw$Total_count<i, N-data_raw$Total_count, NA)
 }
-# If you don't have subscales, don't run line 258-269
+for (i in 1:N){
+  # Total score
+  data_raw[[paste0("q",i,"_true")]]<- ifelse(data_raw$Total_count>=i & data_raw[[paste0("q",i,"_bin")]]==1, 1, 0)
+  data_raw[[paste0("q",i,"_true")]]<- ifelse(data_raw$Total_count<i & data_raw[[paste0("q",i,"_bin")]]==0, 
+                                             1, data_raw[[paste0("q",i,"_true")]])
+}
+count_true<- colSums(data_raw[,grep("_true",names(data_raw))])
+count_true<- data.frame(cbind(cutpoint, count_true))
+qplot(cutpoint, data=count_true, geom="bar", weight=count_true)+
+  theme(panel.background=element_blank())+
+  theme(panel.background= element_rect(color="black"))
+# If you don't have subscales, don't run line 270-281
 for (i in 1:N){
   # scale 1
   data_raw[[paste0("TP_s1",i,sep="")]]<- ifelse(data_raw$s1_count>=i, data_raw$s1_count, NA)
@@ -270,16 +282,15 @@ for (i in 1:N){
 
 ######### histogram #########
 hist(data_raw$Total_count, xlab="Total count", main="Total histogram", breaks=as.integer(N), xlim=c(0,N))
-# If you don't have subscales, don't run line 274-275
+# If you don't have subscales, don't run line 286-287
 hist(data_raw$s1_count, xlab="s1 count", main="s1 histogram", breaks=as.integer(a), xlim=c(0,N))
 hist(data_raw$s2_count, xlab="s2 count", main="s2 histogram", breaks=as.integer(b), xlim=c(0,N))
 
 ######### reshape table for calculating sensspec.. #########
 ## sum over cutpoint ##
 varlist<- c("TP_t","FN_t","FP_t","TN_t")
-# If you don't have subscales, don't run line 281
+# If you don't have subscales, don't run line 293
 varlist<- c(varlist,"TP_s1","FN_s1","FP_s1","TN_s1","TP_s2","FN_s2","FP_s2","TN_s2")
-cutpoint<- 1:N
 data_cutpoint<- data.frame(cutpoint)
 for (i in varlist){
   i<- colSums(data_raw[grep(i, names(data_raw), value=TRUE)], na.rm=T, dims=1)
@@ -289,7 +300,7 @@ colnames(data_cutpoint)<- c("cutpoint", varlist)
 
 ## define scales ##
 scales<- c("t")
-# If you don't have subscales, don't run line 293
+# If you don't have subscales, don't run line 304
 scales<- c(scales, "s1","s2")
 
 ## Sensitivity and Specificity ##
