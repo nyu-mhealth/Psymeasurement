@@ -263,7 +263,7 @@ for (i in 1:N){
 }
 count_true<- colSums(data_raw[,grep("_true",names(data_raw))])
 count_true<- data.frame(cbind(cutpoint, count_true))
-qplot(cutpoint, data=count_true, geom="bar", weight=count_true)+
+qplot(cutpoint, data=count_true, geom="bar", weight=count_true, xlab="item")+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))
 # If you don't have subscales, don't run line 270-281
