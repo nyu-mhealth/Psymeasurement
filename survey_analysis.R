@@ -5,7 +5,7 @@
 #install.packages('doParallel')
 #install.packages('ggplot2')
 #install.packages('Hmisc')
-install.packages('reshape2')
+#install.packages('reshape2')
 
 library(psych)
 library(plyr)
@@ -197,17 +197,18 @@ ggplot(resample, aes(i)) +
 all_items<- data_columns[-1]
 total_count<- paste0(all_items,"_bin")
 for (i in all_items){
-  data_raw[[paste0(i,"_bin",sep="")]]<- ifelse(data_raw[[i]]<=3, 0, 1)
+  data_raw[[paste0(i,"_bin",sep="")]]<- ifelse(data_raw[[i]]<=2, 0, 1)
 }
 N<- length(total_count)
 
-# If you don't have subscales, don't run line 205-212
+# If you don't have subscales, don't run line 205-213
 # define subscales
 # 5 item raw scored
-raw_items<- c(paste0("q",c(1:2, 6:8)))
+raw_items<- c("abortion","baby")
 s1_count<- paste0(raw_items,"_bin")
 a<- length(s1_count)
 # 7 item reverse scored
+reverse_items<- c("whether_use","gender")
 s2_count<- paste0(reverse_items,"_bin")
 b<- length(s2_count)
 
@@ -219,7 +220,7 @@ data_raw$Total_count<- 0
 for (i in c(total_count)){
   data_raw$Total_count<- data_raw$Total_count+ data_raw[[i]]
 }
-# If you don't have subscales, don't run line 223-230
+# If you don't have subscales, don't run line 224-231
 data_raw$s1_count<- 0
 for (i in s1_count){
   data_raw$s1_count<- data_raw$s1_count+ data_raw[[i]]
@@ -231,7 +232,7 @@ for (i in s2_count){
 
 ## standardize total scores ##
 data_raw$Total_std<- scale(data_raw$Total_count)
-# If you don't have subscales, don't run line 235-236
+# If you don't have subscales, don't run line 236-237
 data_raw$s1_std<- scale(data_raw$s1_count)
 data_raw$s2_std<- scale(data_raw$s2_count)
 
@@ -239,7 +240,7 @@ data_raw$s2_std<- scale(data_raw$s2_count)
 for (i in 1:N){
   data_raw[[paste0("SD",i,sep="")]]<- ifelse(data_raw$Total_count>=i, 1, 0)
 }
-# If you don't have subscales, don't run line 243-246
+# If you don't have subscales, don't run line 244-247
 for (i in 1:N){
   data_raw[[paste0("SD_s1",i,sep="")]]<- ifelse(data_raw$s1_count>=i, 1, 0)
   data_raw[[paste0("SD_s2",i,sep="")]]<- ifelse(data_raw$s2_count>=i, 1, 0)
@@ -253,7 +254,7 @@ for (i in 1:N){
   data_raw[[paste0("FP_t",i,sep="")]]<- ifelse(data_raw$Total_count<i, data_raw$Total_count, NA)
   data_raw[[paste0("TN_t",i,sep="")]]<- ifelse(data_raw$Total_count<i, N-data_raw$Total_count, NA)
 }
-# If you don't have subscales, don't run line 257-268
+# If you don't have subscales, don't run line 258-269
 for (i in 1:N){
   # scale 1
   data_raw[[paste0("TP_s1",i,sep="")]]<- ifelse(data_raw$s1_count>=i, data_raw$s1_count, NA)
@@ -268,15 +269,15 @@ for (i in 1:N){
 }
 
 ######### histogram #########
-hist(data_raw$Total_count, xlab="Total count", main="Total histogram", breaks=as.integer(N))
-# If you don't have subscales, don't run line 273-274
-hist(data_raw$s1_count, xlab="s1 count", main="s1 histogram", breaks=as.integer(a))
-hist(data_raw$s2_count, xlab="s2 count", main="s2 histogram", breaks=as.integer(b))
+hist(data_raw$Total_count, xlab="Total count", main="Total histogram", breaks=as.integer(N), xlim=c(0,N))
+# If you don't have subscales, don't run line 274-275
+hist(data_raw$s1_count, xlab="s1 count", main="s1 histogram", breaks=as.integer(a), xlim=c(0,N))
+hist(data_raw$s2_count, xlab="s2 count", main="s2 histogram", breaks=as.integer(b), xlim=c(0,N))
 
 ######### reshape table for calculating sensspec.. #########
 ## sum over cutpoint ##
 varlist<- c("TP_t","FN_t","FP_t","TN_t")
-# If you don't have subscales, don't run line 280
+# If you don't have subscales, don't run line 281
 varlist<- c(varlist,"TP_s1","FN_s1","FP_s1","TN_s1","TP_s2","FN_s2","FP_s2","TN_s2")
 cutpoint<- 1:N
 data_cutpoint<- data.frame(cutpoint)
@@ -288,7 +289,7 @@ colnames(data_cutpoint)<- c("cutpoint", varlist)
 
 ## define scales ##
 scales<- c("t")
-# If you don't have subscales, don't run line 292
+# If you don't have subscales, don't run line 293
 scales<- c(scales, "s1","s2")
 
 ## Sensitivity and Specificity ##
@@ -302,16 +303,6 @@ for (i in scales){
   data_cutpoint[[paste0("spec_",i,"_1",sep="")]]<- 1-data_cutpoint[[paste0("spec_",i,sep="")]]
 }
 
-# Positive and Negative Likelihood Ratios
-for (i in scales){
-  data_cutpoint[[paste0("LRpos_",i,sep="")]]<- 
-    data_cutpoint[[paste0("sens_",i,sep="")]]/
-    (1-data_cutpoint[[paste0("spec_",i,sep="")]])
-  data_cutpoint[[paste0("LRneg_",i,sep="")]]<- 
-    data_cutpoint[[paste0("spec_",i,sep="")]]/
-    (1-data_cutpoint[[paste0("sens_",i,sep="")]])
-}
-
 # Positive and Negative Predictive Power
 for (i in scales){
   data_cutpoint[[paste0("PPP_",i,sep="")]]<- 
@@ -322,17 +313,6 @@ for (i in scales){
     (data_cutpoint[[paste0("TN_",i,sep="")]]+data_cutpoint[[paste0("FN_",i,sep="")]])
 }
 
-# Bayesian Predictive Power (accounting for prevalence)
-for (i in scales){
-  for (p in c(0.99, 0.90, 0.75, 0.5, 0.25, 0.1, 0.01)){
-    data_cutpoint[[paste0("PPPb_",i,p,sep="")]]<- 
-      (data_cutpoint[[paste0("sens_",i,sep="")]]*p)/
-      ((data_cutpoint[[paste0("sens_",i,sep="")]]*p)+(1-p)*(1-data_cutpoint[[paste0("spec_",i,sep="")]]))
-    data_cutpoint[[paste0("NPPb_",i,p,sep="")]]<- 
-      data_cutpoint[[paste0("spec_",i,sep="")]]*(1-p)/
-      (data_cutpoint[[paste0("spec_",i,sep="")]]*(1-p)+p*(1-data_cutpoint[[paste0("sens_",i,sep="")]]))
-  }
-}
 
 ############
 # graphics #
@@ -355,24 +335,5 @@ ggplot(pppnpp, aes(x=cutpoint, y=value, color=variable))+
   theme(panel.background= element_rect(color="black"))+
   coord_cartesian(ylim=c(0,1.1))+
   theme(legend.position=c(0.8,0.15), legend.key= element_blank(), legend.background= element_rect(color="black"))
-
-# PPPb
-pppb<- melt(cbind(cutpoint,data_cutpoint[,grep("PPPb_t", names(data_cutpoint))]), id="cutpoint")
-ggplot(pppb, aes(x=cutpoint, y=value, color=variable))+
-  geom_line(aes(y = value), size=1.2)+
-  theme(panel.background=element_blank())+
-  theme(panel.background= element_rect(color="black"))+
-  coord_cartesian(ylim=c(0,1.1))+
-  theme(legend.key= element_blank(), legend.background= element_rect(color="black"))
-
-# NPPb
-nppb<- melt(cbind(cutpoint,data_cutpoint[,grep("NPPb_t", names(data_cutpoint))]), id="cutpoint")
-ggplot(nppb, aes(x=cutpoint, y=value, color=variable))+
-  geom_line(aes(y = value), size=1.2)+
-  theme(panel.background=element_blank())+
-  theme(panel.background= element_rect(color="black"))+
-  coord_cartesian(ylim=c(0,1.1))+
-  theme(legend.key= element_blank(), legend.background= element_rect(color="black"))
-
 
 
