@@ -230,21 +230,17 @@ for (i in s2_count){
   data_raw$s2_count<- data_raw$s2_count+ data_raw[[i]]
 }
 
-## standardize total scores ##
-data_raw$Total_std<- scale(data_raw$Total_count)
-# If you don't have subscales, don't run line 236-237
-data_raw$s1_std<- scale(data_raw$s1_count)
-data_raw$s2_std<- scale(data_raw$s2_count)
-
-## dx cutpoints ##
+## Generate TP and TN for each item over set of cutpoints ##
 cutpoint<- 1:N
 for (i in 1:N){
-  data_raw[[paste0("SD",i,sep="")]]<- ifelse(data_raw$Total_count>=i, 1, 0)
+  for (j in 1:5){
+    data_raw[[paste("q_TP",j,i,sep="_")]]<- ifelse(data_raw$Total_count>=j & data_raw[[paste0("q",i,"_bin")]]==1, 1, 0)
+  }
 }
-# If you don't have subscales, don't run line 244-247
 for (i in 1:N){
-  data_raw[[paste0("SD_s1",i,sep="")]]<- ifelse(data_raw$s1_count>=i, 1, 0)
-  data_raw[[paste0("SD_s2",i,sep="")]]<- ifelse(data_raw$s2_count>=i, 1, 0)
+  for (j in 7:10){
+    data_raw[[paste("q_TN",j,i,sep="_")]]<- ifelse(data_raw$Total_count<j & data_raw[[paste0("q",i,"_bin")]]==0, 1, 0)
+  }
 }
 
 ## counts across cut-points ##
@@ -255,17 +251,6 @@ for (i in 1:N){
   data_raw[[paste0("FP_t",i,sep="")]]<- ifelse(data_raw$Total_count<i, data_raw$Total_count, NA)
   data_raw[[paste0("TN_t",i,sep="")]]<- ifelse(data_raw$Total_count<i, N-data_raw$Total_count, NA)
 }
-for (i in 1:N){
-  # Total score
-  data_raw[[paste0("q",i,"_true")]]<- ifelse(data_raw$Total_count>=i & data_raw[[paste0("q",i,"_bin")]]==1, 1, 0)
-  data_raw[[paste0("q",i,"_true")]]<- ifelse(data_raw$Total_count<i & data_raw[[paste0("q",i,"_bin")]]==0, 
-                                             1, data_raw[[paste0("q",i,"_true")]])
-}
-count_true<- colSums(data_raw[,grep("_true",names(data_raw))])
-count_true<- data.frame(cbind(cutpoint, count_true))
-qplot(cutpoint, data=count_true, geom="bar", weight=count_true, xlab="item")+
-  theme(panel.background=element_blank())+
-  theme(panel.background= element_rect(color="black"))
 # If you don't have subscales, don't run line 270-281
 for (i in 1:N){
   # scale 1
@@ -281,6 +266,7 @@ for (i in 1:N){
 }
 
 ######### histogram #########
+par(mfrow=c(1,1))
 hist(data_raw$Total_count, xlab="Total count", main="Total histogram", breaks=as.integer(N), xlim=c(0,N))
 # If you don't have subscales, don't run line 286-287
 hist(data_raw$s1_count, xlab="s1 count", main="s1 histogram", breaks=as.integer(a), xlim=c(0,N))
@@ -288,9 +274,10 @@ hist(data_raw$s2_count, xlab="s2 count", main="s2 histogram", breaks=as.integer(
 
 ######### reshape table for calculating sensspec.. #########
 ## sum over cutpoint ##
-varlist<- c("TP_t","FN_t","FP_t","TN_t")
+varlist<- c("q_TP_5","q_TN_10","TP_t","FN_t","FP_t","TN_t")
 # If you don't have subscales, don't run line 293
 varlist<- c(varlist,"TP_s1","FN_s1","FP_s1","TN_s1","TP_s2","FN_s2","FP_s2","TN_s2")
+
 data_cutpoint<- data.frame(cutpoint)
 for (i in varlist){
   i<- colSums(data_raw[grep(i, names(data_raw), value=TRUE)], na.rm=T, dims=1)
@@ -302,6 +289,8 @@ colnames(data_cutpoint)<- c("cutpoint", varlist)
 scales<- c("t")
 # If you don't have subscales, don't run line 304
 scales<- c(scales, "s1","s2")
+# generate subscale indicating subscale items
+data_cutpoint$subscale<- ifelse(data_cutpoint$cutpoint %in% as.numeric(substring(raw_items,2)),1,2)
 
 ## Sensitivity and Specificity ##
 for (i in scales){
@@ -314,7 +303,7 @@ for (i in scales){
   data_cutpoint[[paste0("spec_",i,"_1",sep="")]]<- 1-data_cutpoint[[paste0("spec_",i,sep="")]]
 }
 
-# Positive and Negative Predictive Power
+## Positive and Negative Predictive Power ##
 for (i in scales){
   data_cutpoint[[paste0("PPP_",i,sep="")]]<- 
     data_cutpoint[[paste0("TP_",i,sep="")]]/
@@ -329,22 +318,78 @@ for (i in scales){
 # graphics #
 ############
 
-# sensitivity and specificity
+## item plots ##
+# TP when positive responses are rare
+TP5<- data_raw[data_raw$Total_count<7,]
+TP5<- colSums(TP5[grep("q_TP_5", names(TP5), value=TRUE)], na.rm=T, dims=1)
+TP5<- data.frame(cutpoint, TP5) 
+ggplot(TP5,aes(x=cutpoint,y=TP5,fill=factor(cutpoint)))+
+  geom_bar(stat="identity",position="dodge")+
+  scale_x_continuous(breaks=1:12)+
+  scale_fill_discrete(name="item")+
+  theme(panel.background=element_blank())+
+  theme(panel.background= element_rect(color="black"))+
+  xlab("Item")+ylab("Count")
+
+TP3<- data_raw[data_raw$Total_count<7,]
+TP3<- colSums(TP3[grep("q_TP_3", names(TP3), value=TRUE)], na.rm=T, dims=1)
+TP3<- data.frame(cutpoint, TP3) 
+ggplot(TP3,aes(x=cutpoint,y=TP3,fill=factor(cutpoint)))+
+  geom_bar(stat="identity",position="dodge")+
+  scale_x_continuous(breaks=1:12)+
+  scale_fill_discrete(name="item")+
+  theme(panel.background=element_blank())+
+  theme(panel.background= element_rect(color="black"))+
+  xlab("Item")+ylab("Count")
+
+# TN when negative responses are rare
+TN10<- data_raw[data_raw$Total_count>7,]
+TN10<- colSums(TN10[grep("q_TN_10", names(TN10), value=TRUE)], na.rm=T, dims=1)
+TN10<- data.frame(cutpoint, TN10) 
+ggplot(TN10,aes(x=cutpoint,y=TN10,fill=factor(cutpoint)))+
+  geom_bar(stat="identity",position="dodge")+
+  scale_x_continuous(breaks=1:12)+
+  scale_fill_discrete(name="item")+
+  theme(panel.background=element_blank())+
+  theme(panel.background= element_rect(color="black"))+
+  xlab("Item")+ylab("Count")
+
+TN9<- data_raw[data_raw$Total_count>7,]
+TN9<- colSums(TN9[grep("q_TN_9", names(TN9), value=TRUE)], na.rm=T, dims=1)
+TN9<- data.frame(cutpoint, TN9) 
+ggplot(TN9,aes(x=cutpoint,y=TN9,fill=factor(cutpoint)))+
+  geom_bar(stat="identity",position="dodge")+
+  scale_x_continuous(breaks=1:12)+
+  scale_fill_discrete(name="item")+
+  theme(panel.background=element_blank())+
+  theme(panel.background= element_rect(color="black"))+
+  xlab("Item")+ylab("Count")
+
+## item by subscale ##
+ggplot(data_cutpoint, aes(x=cutpoint, y=q_TP_5, color=factor(subscale)))+
+  geom_point(aes(y = q_TP_5), size=5)+
+  theme(panel.background=element_blank())+
+  theme(panel.background= element_rect(color="black"))+
+  labs(x="Item", y="Count", color="Subscale")
+
+## sensitivity and specificity ##
 sensspec<- melt(data_cutpoint[,c("cutpoint","sens_t","spec_t")], id="cutpoint")
 ggplot(sensspec, aes(x=cutpoint, y=value, color=variable))+
   geom_line(aes(y = value), size=1.2)+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
+  scale_x_continuous(breaks=1:12)+
   coord_cartesian(ylim=c(0,1.1))+
-  theme(legend.position=c(0.9,0.15), legend.key= element_blank(), legend.background= element_rect(color="black"))
+  theme(legend.key= element_blank(), legend.background= element_rect(color="black"))
 
-# PPP and NPP
+## PPP and NPP ##
 pppnpp<- melt(data_cutpoint[,c("cutpoint","PPP_t","NPP_t")], id="cutpoint")
 ggplot(pppnpp, aes(x=cutpoint, y=value, color=variable))+
   geom_line(aes(y = value), size=1.2)+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
+  scale_x_continuous(breaks=1:12)+
   coord_cartesian(ylim=c(0,1.1))+
-  theme(legend.position=c(0.8,0.15), legend.key= element_blank(), legend.background= element_rect(color="black"))
+  theme(legend.key= element_blank(), legend.background= element_rect(color="black"))
 
 
