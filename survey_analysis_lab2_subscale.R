@@ -70,7 +70,7 @@ for (i in subvarlist){
 colnames(sub_cutpoint)<- c("cutpoint", subvarlist)
 
 # generate subscale indicating subscale items
-sub_cutpoint$subscale<- 0
+sub_cutpoint$subscale<- NA
 for (i in subscale){
   sub_cutpoint$subscale<- ifelse(sub_cutpoint$cutpoint %in% get(paste0(i,"n")),i,sub_cutpoint$subscale)
 }
