@@ -13,7 +13,7 @@ library(reshape2)
 all_items<- data_columns[-1]
 total_count<- paste0(all_items,"_bin")
 for (i in all_items){
-  data_raw[[paste0(i,"_bin",sep="")]]<- ifelse(data_raw[[i]]<=2, 0, 1)
+  data_raw[[paste0(i,"_bin",sep="")]]<- ifelse(data_raw[[i]]<=3, 0, 1)
 }
 N<- length(total_count)
 
@@ -83,7 +83,7 @@ for (i in 1:N){
 
 ######### histogram #########
 par(mfrow=c(1,1))
-hist(data_raw$Total_count, xlab="Total count", main="Total histogram", breaks=as.integer(N), xlim=c(0,N))
+hist(data_raw$Total_count, xlab="Total", main="Histogram of Total Dichotomous Score", breaks=as.integer(N), xlim=c(0,N))
 # If you don't have subscales, don't run line 88-89
 hist(data_raw$s1_count, xlab="s1 count", main="s1 histogram", breaks=as.integer(a), xlim=c(0,N))
 hist(data_raw$s2_count, xlab="s2 count", main="s2 histogram", breaks=as.integer(b), xlim=c(0,N))
@@ -139,47 +139,27 @@ for (i in scales){
 TP5<- data_raw[data_raw$Total_count<7,]
 TP5<- colSums(TP5[grep("q_TP_5", names(TP5), value=TRUE)], na.rm=T, dims=1)
 TP5<- data.frame(cutpoint, TP5) 
-ggplot(TP5,aes(x=cutpoint,y=TP5,fill=factor(cutpoint)))+
+plot_TP5<- ggplot(TP5,aes(x=cutpoint,y=TP5,fill=factor(cutpoint)))+
   geom_bar(stat="identity",position="dodge")+
   scale_x_continuous(breaks=1:12)+
   scale_fill_discrete(name="item")+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
   xlab("Item")+ylab("Count")
-
-TP3<- data_raw[data_raw$Total_count<7,]
-TP3<- colSums(TP3[grep("q_TP_3", names(TP3), value=TRUE)], na.rm=T, dims=1)
-TP3<- data.frame(cutpoint, TP3) 
-ggplot(TP3,aes(x=cutpoint,y=TP3,fill=factor(cutpoint)))+
-  geom_bar(stat="identity",position="dodge")+
-  scale_x_continuous(breaks=1:12)+
-  scale_fill_discrete(name="item")+
-  theme(panel.background=element_blank())+
-  theme(panel.background= element_rect(color="black"))+
-  xlab("Item")+ylab("Count")
+plot_TP5
 
 # TN when negative responses are rare
 TN10<- data_raw[data_raw$Total_count>7,]
 TN10<- colSums(TN10[grep("q_TN_10", names(TN10), value=TRUE)], na.rm=T, dims=1)
 TN10<- data.frame(cutpoint, TN10) 
-ggplot(TN10,aes(x=cutpoint,y=TN10,fill=factor(cutpoint)))+
+plot_TN10<- ggplot(TN10,aes(x=cutpoint,y=TN10,fill=factor(cutpoint)))+
   geom_bar(stat="identity",position="dodge")+
   scale_x_continuous(breaks=1:12)+
   scale_fill_discrete(name="item")+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
   xlab("Item")+ylab("Count")
-
-TN9<- data_raw[data_raw$Total_count>7,]
-TN9<- colSums(TN9[grep("q_TN_9", names(TN9), value=TRUE)], na.rm=T, dims=1)
-TN9<- data.frame(cutpoint, TN9) 
-ggplot(TN9,aes(x=cutpoint,y=TN9,fill=factor(cutpoint)))+
-  geom_bar(stat="identity",position="dodge")+
-  scale_x_continuous(breaks=1:12)+
-  scale_fill_discrete(name="item")+
-  theme(panel.background=element_blank())+
-  theme(panel.background= element_rect(color="black"))+
-  xlab("Item")+ylab("Count")
+plot_TN10
 
 # If you don't have subscale, don't run line 185-190
 ## item by subscale ##
@@ -191,22 +171,50 @@ ggplot(data_cutpoint, aes(x=cutpoint, y=q_TP_5, color=factor(subscale)))+
 
 ## sensitivity and specificity ##
 sensspec<- melt(data_cutpoint[,c("cutpoint","sens_t","spec_t")], id="cutpoint")
-ggplot(sensspec, aes(x=cutpoint, y=value, color=variable))+
+plot_ss<- ggplot(sensspec, aes(x=cutpoint, y=value, color=variable))+
   geom_line(aes(y = value), size=1.2)+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
   scale_x_continuous(breaks=1:12)+
-  coord_cartesian(ylim=c(0,1.1))+
+  coord_cartesian(ylim=c(-0.1,1.1))+
   theme(legend.key= element_blank(), legend.background= element_rect(color="black"))
+plot_ss
 
 ## PPP and NPP ##
 pppnpp<- melt(data_cutpoint[,c("cutpoint","PPP_t","NPP_t")], id="cutpoint")
-ggplot(pppnpp, aes(x=cutpoint, y=value, color=variable))+
+plot_pp<- ggplot(pppnpp, aes(x=cutpoint, y=value, color=variable))+
   geom_line(aes(y = value), size=1.2)+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
   scale_x_continuous(breaks=1:12)+
-  coord_cartesian(ylim=c(0,1.1))+
+  coord_cartesian(ylim=c(-0.1,1.1))+
   theme(legend.key= element_blank(), legend.background= element_rect(color="black"))
+plot_pp
+
+
+###################
+# export graphics #
+###################
+
+tiff("Histogram of Total Dichotomous Score.tiff", width = 4, height = 4, units = 'in', res = 300)
+par(mfrow=c(1,1))
+hist(data_raw$Total_count, xlab="Total", main="Histogram of Total Dichotomous Score", breaks=as.integer(N), xlim=c(0,N))
+dev.off()
+
+tiff("True Positive Item Discremination.tiff", width = 6, height = 4, units = 'in', res = 300)
+plot_TP5
+dev.off()
+
+tiff("True Negative Item Discremination.tiff", width = 6, height = 4, units = 'in', res = 300)
+plot_TN10
+dev.off()
+
+tiff("Sencitivity and Specificity.tiff", width = 6, height = 4, units = 'in', res = 300)
+plot_ss
+dev.off()
+
+tiff("PPP and NPP.tiff", width = 6, height = 4, units = 'in', res = 300)
+plot_pp
+dev.off()
 
 
