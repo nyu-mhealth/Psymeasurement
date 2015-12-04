@@ -61,7 +61,7 @@ describe(data_raw)
 # histogram #
 #############
 
-hist(data_raw$total, xlab="total", main="Total", breaks=max(data_raw$total))
+hist_totalraw<- hist(data_raw$total, xlab="Total", main="Histogram of Total Raw Score", breaks=max(data_raw$total))
 # lines(density(data_raw$total))
 hist(data_raw$mean, xlab="mean", main="Mean", breaks=as.integer(max(data_raw$mean)))
 
@@ -176,17 +176,35 @@ write.table(draw_item, file="draw_item.csv", sep=",", row.names=F)
 
 resample<- data.frame(resample)
 par(mfrow=c(1,1))
-ggplot(resample, aes(i)) + 
-  geom_line(aes(y = alpha_stdmean), size=1.2, col="black") + 
-  geom_point(aes(y = alpha_stdmean), size=5, col="black")+
-  geom_line(aes(y = alpha_stdlower), size=1.2, col="black", linetype="dashed")+
-  geom_line(aes(y = alpha_stdhigher), size=1.2, col="black", linetype="dashed")+
-  geom_line(aes(y = average_rmean), size=1.2, col="steelblue2")+
-  geom_point(aes(y = average_rmean), size=5, shape=17, col="steelblue2")+
-  geom_line(aes(y = average_rlower), size=1.2, col="steelblue2", linetype="dashed")+
-  geom_line(aes(y = average_rhigher), size=1.2, col="steelblue2", linetype="dashed")+
-  coord_cartesian(ylim=c(0,1))+
+alpha_r<- melt(resample[,c("i","alpha_mean","average_rmean")], id="i")
+alpha_rhiger<- melt(resample[,c("i","alpha_stdhigher","average_rhigher")],id="i", value.name = "higher")
+alpha_rlower<- melt(resample[,c("i","alpha_stdlower","average_rlower")],id="i", value.name = "lower")
+alpha_r<- cbind(alpha_r, alpha_rhiger, alpha_rlower)
+plot_alphar<- ggplot(alpha_r, aes(x=i, y=value, color=variable)) + 
+  geom_line(aes(y = value), size=1.2) + 
+  geom_point(aes(y = value), size=5)+
+  geom_line(aes(y = higher, color=variable), size=1.2, linetype="dashed")+
+  geom_line(aes(y = lower, color=variable), size=1.2, linetype="dashed")+
+  coord_cartesian(ylim=c(-0.1,1.1))+
+  theme(legend.key= element_blank(), legend.background= element_rect(color="black"))+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
-  labs(x="Resample Size", y="Value")
+  labs(x="Resample Size", y="Value", color="Parameters")
+plot_alphar
+  
 
+# save all the graphics
+tiff("Histogram of Total Raw Score.tiff", width = 4, height = 4, units = 'in', res = 300)
+hist_totalraw
+dev.off()
+
+tiff("Histogram of All Items.tiff", width = 8, height = 8, units = 'in', res = 200)
+par(mfrow=c(3,4)) # c("#rows,#cols")
+for (i in item_name){
+  hist(data_raw[[i]], xlab=i, main=paste("Histogram of",i))
+}
+dev.off()
+
+tiff("Alpha and Average R Resample.tiff", width = 6, height = 4, units = 'in', res = 300)
+plot_alphar
+dev.off()
