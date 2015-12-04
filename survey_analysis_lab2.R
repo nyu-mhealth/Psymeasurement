@@ -30,12 +30,12 @@ for (i in c(total_count)){
 cutpoint<- 1:N
 for (i in 1:N){
   for (j in 1:5){
-    data_raw[[paste("q_TP",j,i,sep="_")]]<- ifelse(data_raw$Total_count>=j & data_raw[[paste0("q",i,"_bin")]]==1, 1, 0)
+    data_raw[[paste("q_TP",j,i,sep="_")]]<- ifelse(data_raw$Total_count>=j & data_raw[N+3+i]==1, 1, 0)
   }
 }
 for (i in 1:N){
   for (j in 7:10){
-    data_raw[[paste("q_TN",j,i,sep="_")]]<- ifelse(data_raw$Total_count<j & data_raw[[paste0("q",i,"_bin")]]==0, 1, 0)
+    data_raw[[paste("q_TN",j,i,sep="_")]]<- ifelse(data_raw$Total_count<j & data_raw[N+3+i]==0, 1, 0)
   }
 }
 
@@ -125,7 +125,7 @@ plot_ss<- ggplot(sensspec, aes(x=cutpoint, y=value, color=variable))+
   geom_line(aes(y = value), size=1.2)+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
-  scale_x_continuous(breaks=1:12)+
+  scale_x_continuous(breaks=1:N)+
   coord_cartesian(ylim=c(-0.1,1.1))+
   theme(legend.key= element_blank(), legend.background= element_rect(color="black"))
 plot_ss
@@ -136,7 +136,7 @@ plot_pp<- ggplot(pppnpp, aes(x=cutpoint, y=value, color=variable))+
   geom_line(aes(y = value), size=1.2)+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
-  scale_x_continuous(breaks=1:12)+
+  scale_x_continuous(breaks=1:N)+
   coord_cartesian(ylim=c(-0.1,1.1))+
   theme(legend.key= element_blank(), legend.background= element_rect(color="black"))
 plot_pp
