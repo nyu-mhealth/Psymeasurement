@@ -99,7 +99,7 @@ TP5<- colSums(TP5[grep("q_TP_5", names(TP5), value=TRUE)], na.rm=T, dims=1)
 TP5<- data.frame(cutpoint, TP5) 
 plot_TP5<- ggplot(TP5,aes(x=cutpoint,y=TP5,fill=factor(cutpoint)))+
   geom_bar(stat="identity",position="dodge")+
-  scale_x_continuous(breaks=1:12)+
+  scale_x_continuous(breaks=1:N)+
   scale_fill_discrete(name="item")+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
@@ -112,7 +112,7 @@ TN10<- colSums(TN10[grep("q_TN_10", names(TN10), value=TRUE)], na.rm=T, dims=1)
 TN10<- data.frame(cutpoint, TN10) 
 plot_TN10<- ggplot(TN10,aes(x=cutpoint,y=TN10,fill=factor(cutpoint)))+
   geom_bar(stat="identity",position="dodge")+
-  scale_x_continuous(breaks=1:12)+
+  scale_x_continuous(breaks=1:N)+
   scale_fill_discrete(name="item")+
   theme(panel.background=element_blank())+
   theme(panel.background= element_rect(color="black"))+
