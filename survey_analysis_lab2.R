@@ -17,17 +17,6 @@ for (i in all_items){
 }
 N<- length(total_count)
 
-# If you don't have subscales, don't run line 21-29
-# define subscales
-# items raw scored
-raw_items<- c("abortion","baby")
-s1_count<- paste0(raw_items,"_bin")
-a<- length(s1_count)
-# items reverse scored
-reverse_items<- c("whether_use","gender")
-s2_count<- paste0(reverse_items,"_bin")
-b<- length(s2_count)
-
 ## basic descriptives ##
 describe(data_raw[,grep("_bin", names(data_raw))])
 
@@ -35,15 +24,6 @@ describe(data_raw[,grep("_bin", names(data_raw))])
 data_raw$Total_count<- 0
 for (i in c(total_count)){
   data_raw$Total_count<- data_raw$Total_count+ data_raw[[i]]
-}
-# If you don't have subscales, don't run line 40-47
-data_raw$s1_count<- 0
-for (i in s1_count){
-  data_raw$s1_count<- data_raw$s1_count+ data_raw[[i]]
-}
-data_raw$s2_count<- 0
-for (i in s2_count){
-  data_raw$s2_count<- data_raw$s2_count+ data_raw[[i]]
 }
 
 ## Generate TP and TN for each item over set of cutpoints ##
@@ -67,32 +47,14 @@ for (i in 1:N){
   data_raw[[paste0("FP_t",i,sep="")]]<- ifelse(data_raw$Total_count<i, data_raw$Total_count, NA)
   data_raw[[paste0("TN_t",i,sep="")]]<- ifelse(data_raw$Total_count<i, N-data_raw$Total_count, NA)
 }
-# If you don't have subscales, don't run line 71-82
-for (i in 1:N){
-  # scale 1
-  data_raw[[paste0("TP_s1",i,sep="")]]<- ifelse(data_raw$s1_count>=i, data_raw$s1_count, NA)
-  data_raw[[paste0("FN_s1",i,sep="")]]<- ifelse(data_raw$s1_count>=i, a-data_raw$s1_count, NA)
-  data_raw[[paste0("FP_s1",i,sep="")]]<- ifelse(data_raw$s1_count<i, data_raw$s1_count, NA)
-  data_raw[[paste0("TN_s1",i,sep="")]]<- ifelse(data_raw$s1_count<i, a-data_raw$s1_count, NA)
-  # scale 2
-  data_raw[[paste0("TP_s2",i,sep="")]]<- ifelse(data_raw$s2_count>=i, data_raw$s2_count, NA)
-  data_raw[[paste0("FN_s2",i,sep="")]]<- ifelse(data_raw$s2_count>=i, b-data_raw$s2_count, NA)
-  data_raw[[paste0("FP_s2",i,sep="")]]<- ifelse(data_raw$s2_count<i, data_raw$s2_count, NA)
-  data_raw[[paste0("TN_s2",i,sep="")]]<- ifelse(data_raw$s2_count<i, b-data_raw$s2_count, NA)
-}
 
 ######### histogram #########
 par(mfrow=c(1,1))
 hist(data_raw$Total_count, xlab="Total", main="Histogram of Total Dichotomous Score", breaks=as.integer(N), xlim=c(0,N))
-# If you don't have subscales, don't run line 88-89
-hist(data_raw$s1_count, xlab="s1 count", main="s1 histogram", breaks=as.integer(a), xlim=c(0,N))
-hist(data_raw$s2_count, xlab="s2 count", main="s2 histogram", breaks=as.integer(b), xlim=c(0,N))
 
 ######### reshape table for calculating sensspec.. #########
 ## sum over cutpoint ##
 varlist<- c("q_TP_5","q_TN_10","TP_t","FN_t","FP_t","TN_t")
-# If you don't have subscales, don't run line 95
-varlist<- c(varlist,"TP_s1","FN_s1","FP_s1","TN_s1","TP_s2","FN_s2","FP_s2","TN_s2")
 
 data_cutpoint<- data.frame(cutpoint)
 for (i in varlist){
@@ -103,10 +65,6 @@ colnames(data_cutpoint)<- c("cutpoint", varlist)
 
 ## define scales ##
 scales<- c("t")
-# If you don't have subscales, don't run line 107-109
-scales<- c(scales, "s1","s2")
-# generate subscale indicating subscale items
-data_cutpoint$subscale<- ifelse(data_cutpoint$cutpoint %in% as.numeric(substring(raw_items,2)),1,2)
 
 ## Sensitivity and Specificity ##
 for (i in scales){
@@ -160,14 +118,6 @@ plot_TN10<- ggplot(TN10,aes(x=cutpoint,y=TN10,fill=factor(cutpoint)))+
   theme(panel.background= element_rect(color="black"))+
   xlab("Item")+ylab("Count")
 plot_TN10
-
-# If you don't have subscale, don't run line 185-190
-## item by subscale ##
-ggplot(data_cutpoint, aes(x=cutpoint, y=q_TP_5, color=factor(subscale)))+
-  geom_point(aes(y = q_TP_5), size=5)+
-  theme(panel.background=element_blank())+
-  theme(panel.background= element_rect(color="black"))+
-  labs(x="Item", y="Count", color="Subscale")
 
 ## sensitivity and specificity ##
 sensspec<- melt(data_cutpoint[,c("cutpoint","sens_t","spec_t")], id="cutpoint")
