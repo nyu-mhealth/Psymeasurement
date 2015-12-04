@@ -61,7 +61,7 @@ describe(data_raw)
 # histogram #
 #############
 
-hist_totalraw<- hist(data_raw$total, xlab="Total", main="Histogram of Total Raw Score", breaks=max(data_raw$total))
+hist(data_raw$total, xlab="Total", main="Histogram of Total Raw Score", breaks=max(data_raw$total))
 # lines(density(data_raw$total))
 hist(data_raw$mean, xlab="mean", main="Mean", breaks=as.integer(max(data_raw$mean)))
 
@@ -195,7 +195,7 @@ plot_alphar
 
 # save all the graphics
 tiff("Histogram of Total Raw Score.tiff", width = 4, height = 4, units = 'in', res = 300)
-hist_totalraw
+hist(data_raw$total, xlab="Total", main="Histogram of Total Raw Score", breaks=max(data_raw$total))
 dev.off()
 
 tiff("Histogram of All Items.tiff", width = 8, height = 8, units = 'in', res = 200)
