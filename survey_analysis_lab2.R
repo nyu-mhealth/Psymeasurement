@@ -146,24 +146,24 @@ plot_pp
 # export graphics #
 ###################
 
-png("Histogram of Total Dichotomous Score.png", width = 4, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"histogram.png"), width = 4, height = 4, units = 'in', res = 300)
 par(mfrow=c(1,1))
 hist(data_raw$Total_count, xlab="Total", main="Histogram of Total Dichotomous Score", breaks=as.integer(N), xlim=c(0,N))
 dev.off()
 
-png("True Positive Item Discremination.png", width = 6, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"tp_item_discrimination.png"), width = 6, height = 4, units = 'in', res = 300)
 plot_TP5
 dev.off()
 
-png("True Negative Item Discremination.png", width = 6, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"True Negative Item Discremination.png"), width = 6, height = 4, units = 'in', res = 300)
 plot_TN10
 dev.off()
 
-png("Sencitivity and Specificity.png", width = 6, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"sens_spec.png"), width = 6, height = 4, units = 'in', res = 300)
 plot_ss
 dev.off()
 
-png("PPP and NPP.png", width = 6, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"ppp_npp.png"), width = 6, height = 4, units = 'in', res = 300)
 plot_pp
 dev.off()
 

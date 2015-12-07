@@ -124,14 +124,14 @@ plot_subscale
 ###################
 
 for (i in subscale_count){
-  png(paste(i,"histogram.png"), width = 4, height = 4, units = 'in', res = 300)
+  png(file=paste(image_directory,i,"_histogram.png"), width = 4, height = 4, units = 'in', res = 300)
   par(mfrow=c(1,1))
   a<- as.numeric(length(get(i)))
   hist(data_raw[[i]], xlab=i, main=paste(i,"histogram"), breaks=as.integer(a), xlim=c(0,N))
   dev.off()
 }
 
-png("Item by Subscale.png", width = 6, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"Item by Subscale.png"), width = 6, height = 4, units = 'in', res = 300)
 plot_subscale
 dev.off()
 

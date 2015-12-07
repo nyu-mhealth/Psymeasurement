@@ -29,7 +29,8 @@ data_columns = c("Id", "abortion", "baby", "whether_use", "gender")
 
 # set file directory
 setwd("~/")
-
+# set image file directory to export images
+image_directory<- "~/images/"
 
 # import csv file
 data<- read.csv(csv_filename, stringsAsFactors = F)
@@ -194,17 +195,17 @@ plot_alphar
   
 
 # save all the graphics
-png("Histogram of Total Raw Score.png", width = 4, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"Histogram of Total Raw Score.png"), width = 5, height = 4, units = 'in', res = 300)
 hist(data_raw$total, xlab="Total", main="Histogram of Total Raw Score", breaks=max(data_raw$total))
 dev.off()
 
-png("Histogram of All Items.png", width = 8, height = 8, units = 'in', res = 200)
+png(file=paste0(image_directory,"Histogram of All Items.png"), width = 8, height = 8, units = 'in', res = 200)
 par(mfrow=c(3,4)) # c("#rows,#cols")
 for (i in item_name){
   hist(data_raw[[i]], xlab=i, main=paste("Histogram of",i))
 }
 dev.off()
 
-png("Alpha and Average R Resample.png", width = 6, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"alpha_convergence.png"), width = 6, height = 4, units = 'in', res = 300)
 plot_alphar
 dev.off()
