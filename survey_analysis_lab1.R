@@ -194,17 +194,17 @@ plot_alphar
   
 
 # save all the graphics
-tiff("Histogram of Total Raw Score.tiff", width = 4, height = 4, units = 'in', res = 300)
+png("Histogram of Total Raw Score.png", width = 4, height = 4, units = 'in', res = 300)
 hist(data_raw$total, xlab="Total", main="Histogram of Total Raw Score", breaks=max(data_raw$total))
 dev.off()
 
-tiff("Histogram of All Items.tiff", width = 8, height = 8, units = 'in', res = 200)
+png("Histogram of All Items.png", width = 8, height = 8, units = 'in', res = 200)
 par(mfrow=c(3,4)) # c("#rows,#cols")
 for (i in item_name){
   hist(data_raw[[i]], xlab=i, main=paste("Histogram of",i))
 }
 dev.off()
 
-tiff("Alpha and Average R Resample.tiff", width = 6, height = 4, units = 'in', res = 300)
+png("Alpha and Average R Resample.png", width = 6, height = 4, units = 'in', res = 300)
 plot_alphar
 dev.off()
