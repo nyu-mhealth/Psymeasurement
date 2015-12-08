@@ -91,8 +91,8 @@ for (i in scales){
 # factor analysis #
 ###################
 
-factor_analysis<- fa(data_raw[2:N+1],nfactors=1, rotate="none",oblique.scores=F)
-factor_scores<- factor.scores(data_raw[2:N+1],factor_analysis)
+factor_analysis<- fa(data_raw[1:N+1],nfactors=1, rotate="none",oblique.scores=F)
+factor_scores<- factor.scores(data_raw[1:N+1],factor_analysis)
 data_raw<- cbind(data_raw, factor_scores$scores)
 # calculate correlation between mean and factor score
 cor(data_raw$mean, data_raw$MR1, method="pearson")
