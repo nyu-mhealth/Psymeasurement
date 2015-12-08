@@ -178,7 +178,7 @@ write.table(draw_item, file="draw_item.csv", sep=",", row.names=F)
 
 resample<- data.frame(resample)
 par(mfrow=c(1,1))
-alpha_r<- melt(resample[,c("i","alpha_mean","average_rmean")], id="i")
+alpha_r<- melt(resample[,c("i","stdalpha_mean","average_rmean")], id="i")
 alpha_rhiger<- melt(resample[,c("i","alpha_stdhigher","average_rhigher")],id="i", value.name = "higher")
 alpha_rlower<- melt(resample[,c("i","alpha_stdlower","average_rlower")],id="i", value.name = "lower")
 alpha_r<- cbind(alpha_r, alpha_rhiger, alpha_rlower)
