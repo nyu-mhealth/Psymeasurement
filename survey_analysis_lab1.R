@@ -38,6 +38,7 @@ data<- read.csv(csv_filename, stringsAsFactors = F)
 # only keep submitted surveys
 data_raw<- subset(data, AssignmentStatusCode=="Submitted"| AssignmentStatusCode=="Approved", 
                   select=data_columns)
+N<- length(data_columns)-1
 
 # rename item names
 #for (i in 1:(ncol(data_raw)-1)){
@@ -47,8 +48,8 @@ data_raw<- subset(data, AssignmentStatusCode=="Submitted"| AssignmentStatusCode=
 #reverse_items<- c(paste0("item",c(3:5, 9:12)))
 #data_raw[,reverse_items]<- 6 - data_raw[,reverse_items]
 
-data_raw$total<- rowSums(data_raw[,2:ncol(data_raw)])
-data_raw$mean<- rowMeans(data_raw[,2:(ncol(data_raw)-1)])
+data_raw$total<- rowSums(data_raw[,2:(N+1)])
+data_raw$mean<- rowMeans(data_raw[,2:(N+1)])
 
 write.table(data_raw, file="data_raw.csv", sep=",", row.names = F)
 
@@ -64,9 +65,9 @@ describe(data_raw)
 
 hist(data_raw$total, xlab="Total", main="Histogram of Total Raw Score", breaks=max(data_raw$total))
 # lines(density(data_raw$total))
-hist(data_raw$mean, xlab="mean", main="Mean", breaks=as.integer(max(data_raw$mean)))
+hist(data_raw$mean, xlab="mean", main="Mean", breaks=as.integer(N))
 
-item_name<- names(data_raw[2:(ncol(data_raw)-2)])
+item_name<- data_columns[-1]
 par(mfrow=c(3,2)) # c("#rows,#cols")
 for (i in item_name){
   hist(data_raw[[i]], xlab=i, main=paste("Histogram of",i))
