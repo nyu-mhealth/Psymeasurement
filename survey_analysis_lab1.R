@@ -45,8 +45,8 @@ N<- length(data_columns)-1
 #  names(data_raw)[i+1] <- paste0("item",i)
 #}
 # reverse code items
-#reverse_items<- c(paste0("item",c(3:5, 9:12)))
-#data_raw[,reverse_items]<- 6 - data_raw[,reverse_items]
+reverse_items<- c(paste0("item",c(3:5, 9:12)))
+data_raw[,reverse_items]<- 6 - data_raw[,reverse_items]
 
 data_raw$total<- rowSums(data_raw[,2:(N+1)])
 data_raw$mean<- rowMeans(data_raw[,2:(N+1)])
