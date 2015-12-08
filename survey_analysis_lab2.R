@@ -151,7 +151,7 @@ plot_pp<- ggplot(pppnpp, aes(x=cutpoint, y=value, color=variable))+
 plot_pp
 
 ## Factor Analysis ##
-par(mfrow=c(2,1))
+par(mfrow=c(1,2))
 hist(data_raw$mean, xlab="Mean Raw Score", main="Histogram of Mean Raw Score", breaks=as.integer(N))
 hist(data_raw$MR1, xlab="Factor Score", main="Histogram of Factor Score", breaks=as.integer(N))
 
@@ -181,8 +181,8 @@ png(file=paste0(image_directory,"ppp_npp.png"), width = 6, height = 4, units = '
 plot_pp
 dev.off()
 
-png(file=paste0(image_directory,"factor_histogram.png"), width = 5, height = 7, units = 'in', res = 300)
-par(mfrow=c(2,1))
+png(file=paste0(image_directory,"factor_histogram.png"), width = 8, height = 6, units = 'in', res = 300)
+par(mfrow=c(1,2))
 hist(data_raw$mean, xlab="Mean Raw Score", main="Histogram of Mean Raw Score", breaks=as.integer(N))
 hist(data_raw$MR1, xlab="Factor Score", main="Histogram of Factor Score", breaks=as.integer(N))
 dev.off()
