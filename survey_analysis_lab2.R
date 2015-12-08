@@ -87,6 +87,15 @@ for (i in scales){
     (data_cutpoint[[paste0("TN_",i,sep="")]]+data_cutpoint[[paste0("FN_",i,sep="")]])
 }
 
+###################
+# factor analysis #
+###################
+
+factor_analysis<- fa(data_raw[2:N+1],nfactors=1, rotate="none",oblique.scores=F)
+factor_scores<- factor.scores(data_raw[2:N+1],factor_analysis,method="components")
+data_raw<- cbind(data_raw, factor_scores$scores)
+# calculate correlation between mean and factor score
+cor(data_raw$mean, data_raw$MR1, method="pearson")
 
 ############
 # graphics #
@@ -141,6 +150,11 @@ plot_pp<- ggplot(pppnpp, aes(x=cutpoint, y=value, color=variable))+
   theme(legend.key= element_blank(), legend.background= element_rect(color="black"))
 plot_pp
 
+## Factor Analysis ##
+par(mfrow=c(2,1))
+hist(data_raw$mean, xlab="Mean Raw Score", main="Histogram of Mean Raw Score", breaks=as.integer(N))
+hist(data_raw$MR1, xlab="Factor Score", main="Histogram of Factor Score", breaks=as.integer(N))
+
 
 ###################
 # export graphics #
@@ -167,4 +181,8 @@ png(file=paste0(image_directory,"ppp_npp.png"), width = 6, height = 4, units = '
 plot_pp
 dev.off()
 
-
+png(file=paste0(image_directory,"factor_histogram.png"), width = 5, height = 4, units = 'in', res = 300)
+par(mfrow=c(2,1))
+hist(data_raw$mean, xlab="Mean Raw Score", main="Histogram of Mean Raw Score", breaks=as.integer(N))
+hist(data_raw$MR1, xlab="Factor Score", main="Histogram of Factor Score", breaks=as.integer(N))
+dev.off()
