@@ -146,7 +146,7 @@ plot_pp
 # export graphics #
 ###################
 
-png(file=paste0(image_directory,"histogram.png"), width = 4, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"histogram.png"), width = 5, height = 4, units = 'in', res = 300)
 par(mfrow=c(1,1))
 hist(data_raw$Total_count, xlab="Total", main="Histogram of Total Dichotomous Score", breaks=as.integer(N), xlim=c(0,N))
 dev.off()
