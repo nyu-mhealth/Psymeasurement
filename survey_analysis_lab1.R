@@ -20,8 +20,8 @@ library(reshape2)
 # Configuration   #
 ###################
 
-csv_filename = "data/turk_job_reproductive_autonomy_wave_78_assignments.csv"
-data_columns = c("Id", "abortion", "baby", "whether_use", "gender")
+csv_filename = "turk_job_cfcs_wave_51_assignments.csv"
+data_columns = c("Id", "q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12")
 
 ###################
 # data processing #
