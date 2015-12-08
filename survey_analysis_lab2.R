@@ -169,7 +169,7 @@ png(file=paste0(image_directory,"tp_item_discrimination.png"), width = 6, height
 plot_TP5
 dev.off()
 
-png(file=paste0(image_directory,"True Negative Item Discremination.png"), width = 6, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"tn_item_discrimination.png"), width = 6, height = 4, units = 'in', res = 300)
 plot_TN10
 dev.off()
 
