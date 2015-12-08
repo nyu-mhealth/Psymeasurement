@@ -181,7 +181,7 @@ png(file=paste0(image_directory,"ppp_npp.png"), width = 6, height = 4, units = '
 plot_pp
 dev.off()
 
-png(file=paste0(image_directory,"factor_histogram.png"), width = 5, height = 4, units = 'in', res = 300)
+png(file=paste0(image_directory,"factor_histogram.png"), width = 5, height = 7, units = 'in', res = 300)
 par(mfrow=c(2,1))
 hist(data_raw$mean, xlab="Mean Raw Score", main="Histogram of Mean Raw Score", breaks=as.integer(N))
 hist(data_raw$MR1, xlab="Factor Score", main="Histogram of Factor Score", breaks=as.integer(N))
