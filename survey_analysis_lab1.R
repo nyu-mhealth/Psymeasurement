@@ -78,25 +78,25 @@ for (i in item_name){
 #################
 
 # variance
-var(data_raw[2:(ncol(data_raw)-2)])
+var(data_raw[2:(N+1)])
 
 # covariance matrix
-cov(data_raw[2:(ncol(data_raw)-2)], method="pearson")
-cov(data_raw[2:(ncol(data_raw)-2)], method="kendall")
-cov(data_raw[2:(ncol(data_raw)-2)], method="spearman")
+cov(data_raw[2:(N+1)], method="pearson")
+cov(data_raw[2:(N+1)], method="kendall")
+cov(data_raw[2:(N+1)], method="spearman")
 
 # correlation matrix
-cor(data_raw[2:(ncol(data_raw)-2)], method="pearson")
-cor(data_raw[2:(ncol(data_raw)-2)], method="kendall")
-cor(data_raw[2:(ncol(data_raw)-2)], method="spearman")
+cor(data_raw[2:(N+1)], method="pearson")
+cor(data_raw[2:(N+1)], method="kendall")
+cor(data_raw[2:(N+1)], method="spearman")
 
 
 # alpha and interitem correlation
-alpha(data_raw[2:(ncol(data_raw)-2)])
+alpha(data_raw[2:(N+1)])
 
-alpha_raw50<- alpha(data_raw[2:(ncol(data_raw)-2)])$total$raw_alpha
-alpha_std50<- alpha(data_raw[2:(ncol(data_raw)-2)])$total$std.alpha
-average_r50<- alpha(data_raw[2:(ncol(data_raw)-2)])$total$average_r
+alpha_raw50<- alpha(data_raw[2:(N+1)])$total$raw_alpha
+alpha_std50<- alpha(data_raw[2:(N+1)])$total$std.alpha
+average_r50<- alpha(data_raw[2:(N+1)])$total$average_r
 
 
 
@@ -152,15 +152,15 @@ for (i in 1:ncol(resample)){ # replace missing values to the previous value in t
 ###### take out item ######
 
 draw_item<- NULL # create an empty object
-for (k in names(data_raw[2:(length(data_raw)-2)])){
+for (k in names(data_raw[2:(N+1)])){
   data_item<- data_raw[ , !names(data_raw) %in% c(i)] # delete one variable at a time
   data_item_resample<- resample.function(data_item, draw_sample, 10) # 10 bootstrap
   data_item_resample<- cbind(k, data_item_resample)
   draw_item<- rbind(draw_item, data_item_resample)
   i<- 50
-  alpha_mean<- alpha(data_item[2:(ncol(data_raw)-2)])$total$raw_alpha
-  alpha_stdmean<- alpha(data_raw[2:(ncol(data_raw)-2)])$total$std.alpha
-  average_rmean<- alpha(data_raw[2:(ncol(data_raw)-2)])$total$average_r
+  alpha_mean<- alpha(data_item[2:(N+1)])$total$raw_alpha
+  alpha_stdmean<- alpha(data_raw[2:(N+1)])$total$std.alpha
+  average_rmean<- alpha(data_raw[2:(N+1)])$total$average_r
   alphar50<- cbind(k, i, alpha_mean, alpha_stdmean, average_rmean)
   draw_item<- smartbind(draw_item, alphar50)
 }
@@ -178,7 +178,7 @@ write.table(draw_item, file="draw_item.csv", sep=",", row.names=F)
 
 resample<- data.frame(resample)
 par(mfrow=c(1,1))
-alpha_r<- melt(resample[,c("i","stdalpha_mean","average_rmean")], id="i")
+alpha_r<- melt(resample[,c("i","alpha_stdmean","average_rmean")], id="i")
 alpha_rhiger<- melt(resample[,c("i","alpha_stdhigher","average_rhigher")],id="i", value.name = "higher")
 alpha_rlower<- melt(resample[,c("i","alpha_stdlower","average_rlower")],id="i", value.name = "lower")
 alpha_r<- cbind(alpha_r, alpha_rhiger, alpha_rlower)
