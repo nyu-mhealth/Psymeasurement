@@ -1,15 +1,14 @@
 ---
-title: "CFCS Summary Statistics"
-author: "Hong Gao"
-date: "December 9, 2015"
-output: pdf_document
+title: "Survey Summary Statistics"
+output: html_document
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
 ## Summary Statistics of Raw Scores
 
 ```{r}
 library(psych)
-data<- read.csv("cfcs_complete.csv")
+data<- read.csv("data_complete.csv")
 N<- 12
 describe(data[2:(N+1)], skew = FALSE)
 ```
@@ -24,7 +23,7 @@ describe(data[grep("_bin", names(data), value=TRUE)], skew = FALSE)
 ## Correlation Matrix
 
 ```{r}
-cor(data[2:(N+1)], method="pearson")
+round(cor(data[2:(N+1)], method="pearson"),2)
 ```
 
 ## Average R
