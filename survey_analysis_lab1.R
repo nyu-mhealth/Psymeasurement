@@ -184,7 +184,7 @@ alpha_rlower<- melt(resample[,c("i","alpha_stdlower","average_rlower")],id="i", 
 alpha_r<- cbind(alpha_r, alpha_rhiger, alpha_rlower)
 plot_alphar<- ggplot(alpha_r, aes(x=i, y=value, color=variable)) + 
   geom_line(aes(y = value), size=1.2) + 
-  geom_point(aes(y = value), size=5)+
+  geom_point(aes(y = value), size=4)+
   geom_line(aes(y = higher, color=variable), size=1.2, linetype="dashed")+
   geom_line(aes(y = lower, color=variable), size=1.2, linetype="dashed")+
   coord_cartesian(ylim=c(-0.1,1.1))+
